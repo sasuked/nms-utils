@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
+group 'me.saiintbrisson.nms'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':api')
+
+    compileOnly fileTree('libs') { include '*.jar' }
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

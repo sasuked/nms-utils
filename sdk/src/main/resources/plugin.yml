@@ -1,0 +1,3 @@
+name: NmsUtils
+version: 1.0.0
+main: me.saiintbrisson.nms.sdk.NmsPlugin
