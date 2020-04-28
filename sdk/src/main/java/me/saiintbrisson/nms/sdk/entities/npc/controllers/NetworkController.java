@@ -1,4 +1,4 @@
-package me.saiintbrisson.nms.sdk.npc.controllers;
+package me.saiintbrisson.nms.sdk.entities.npc.controllers;
 
 import net.minecraft.server.v1_8_R3.EnumProtocolDirection;
 import net.minecraft.server.v1_8_R3.NetworkManager;

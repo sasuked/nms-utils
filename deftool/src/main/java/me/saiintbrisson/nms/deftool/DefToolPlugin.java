@@ -1,16 +1,17 @@
-package me.saiintbrisson.nms.test;
+package me.saiintbrisson.nms.deftool;
 
 import lombok.Getter;
 import me.saiintbrisson.commands.CommandFrame;
-import me.saiintbrisson.nms.test.action.Action;
-import me.saiintbrisson.nms.test.action.ActionListener;
+import me.saiintbrisson.nms.api.entities.npc.Npc;
+import me.saiintbrisson.nms.deftool.action.Action;
+import me.saiintbrisson.nms.deftool.listeners.ActionListener;
 import me.saiintbrisson.nms.api.NmsAPI;
 import me.saiintbrisson.nms.api.area.AreaHistory;
 import me.saiintbrisson.nms.api.entities.npc.SkinLayer;
-import me.saiintbrisson.nms.test.commands.npc.NpcCommand;
-import me.saiintbrisson.nms.test.commands.edit.EditCommand;
-import me.saiintbrisson.nms.test.commands.edit.SetCommand;
-import me.saiintbrisson.nms.test.commands.edit.UndoCommand;
+import me.saiintbrisson.nms.deftool.commands.npc.NpcCommand;
+import me.saiintbrisson.nms.deftool.commands.edit.EditCommand;
+import me.saiintbrisson.nms.deftool.commands.edit.SetCommand;
+import me.saiintbrisson.nms.deftool.commands.edit.UndoCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -18,10 +19,12 @@ import java.util.Map;
 import java.util.UUID;
 
 @Getter
-public class TestPlugin extends JavaPlugin {
+public class DefToolPlugin extends JavaPlugin {
 
     private AreaHistory history;
     private Map<UUID, Action> actions = new HashMap<>();
+
+    private Map<UUID, Npc> npcSelections = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -32,9 +35,11 @@ public class TestPlugin extends JavaPlugin {
         frame.register(
           new EditCommand(this),
           new SetCommand(this),
-          new UndoCommand(this),
+          new UndoCommand(this)
+        );
 
-          new NpcCommand()
+        frame.register(
+          new NpcCommand(this)
         );
 
         getServer().getPluginManager().registerEvents(new ActionListener(this), this);

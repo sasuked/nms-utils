@@ -11,7 +11,7 @@ import me.saiintbrisson.nms.sdk.area.object.NmsCuboid;
 import me.saiintbrisson.nms.sdk.area.NmsHistory;
 import me.saiintbrisson.nms.sdk.area.object.NmsWorld;
 import me.saiintbrisson.nms.sdk.area.SimpleEditor;
-import me.saiintbrisson.nms.sdk.npc.NmsNpc;
+import me.saiintbrisson.nms.sdk.entities.npc.NmsNpc;
 import me.saiintbrisson.nms.sdk.packet.PacketInterceptor;
 import me.saiintbrisson.nms.sdk.packet.PacketRegister;
 import me.saiintbrisson.nms.sdk.scoreboard.NmsScoreboard;
@@ -59,7 +59,7 @@ public class NmsPlugin extends JavaPlugin implements NmsHolder {
                     PacketPlayOutNamedEntitySpawn spawnPacket = (PacketPlayOutNamedEntitySpawn) object;
                     int field = (int) PacketListener.getField(spawnPacket, "a");
 
-                    NmsNpc nmsNpc = ((NmsNpc) NpcRegistry.getInstance().get(field));
+                    NmsNpc nmsNpc = ((NmsNpc) NpcRegistry.getInstance().getByEntityId(field));
                     if(nmsNpc != null) {
                         if(!nmsNpc.isVisibleToAll() && !nmsNpc.getVisibleMap().containsKey(player.getUniqueId())) return true;
 
@@ -133,6 +133,15 @@ public class NmsPlugin extends JavaPlugin implements NmsHolder {
     @Override
     public Npc createNpc(World world, String prefix, String name, String complement) {
         return new NmsNpc(world, prefix, name, complement);
+    }
+
+    @Override
+    public Npc createNpc(int id, World world, String prefix, String name, String complement) {
+        if(NpcRegistry.getInstance().getByNpcId(id) != null) {
+            throw new IllegalArgumentException("This id is already in use");
+        }
+
+        return new NmsNpc(id, world, prefix, name, complement);
     }
 
 }

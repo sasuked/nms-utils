@@ -1,10 +1,10 @@
-package me.saiintbrisson.nms.test.commands.edit;
+package me.saiintbrisson.nms.deftool.commands.edit;
 
 import lombok.AllArgsConstructor;
 import me.saiintbrisson.commands.Execution;
 import me.saiintbrisson.commands.annotations.Command;
-import me.saiintbrisson.nms.test.TestPlugin;
-import me.saiintbrisson.nms.test.action.Action;
+import me.saiintbrisson.nms.deftool.DefToolPlugin;
+import me.saiintbrisson.nms.deftool.action.Action;
 import me.saiintbrisson.nms.api.NmsAPI;
 import me.saiintbrisson.nms.api.area.AreaEditor;
 import me.saiintbrisson.nms.api.area.AreaWorld;
@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 @AllArgsConstructor
 public class SetCommand {
 
-    private TestPlugin plugin;
+    private DefToolPlugin plugin;
 
     @Command(
         name = "edit.set",

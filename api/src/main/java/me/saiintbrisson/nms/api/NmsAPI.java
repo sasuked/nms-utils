@@ -79,4 +79,8 @@ public final class NmsAPI {
         return getHolder().createNpc(world, prefix, name, complement);
     }
 
+    public static Npc createNpc(int id, World world, String prefix, String name, String complement) {
+        return getHolder().createNpc(id, world, prefix, name, complement);
+    }
+
 }

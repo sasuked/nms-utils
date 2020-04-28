@@ -4,7 +4,7 @@ import org.bukkit.Location;
 
 public interface NmsEntity {
 
-    int getId();
+    int getEntityId();
 
     Location getLocation();
     void setLocation(Location location);

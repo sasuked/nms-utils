@@ -1,4 +1,4 @@
-package me.saiintbrisson.nms.sdk.npc;
+package me.saiintbrisson.nms.sdk.entities.npc;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
@@ -11,8 +11,8 @@ import me.saiintbrisson.nms.api.entities.NpcRegistry;
 import me.saiintbrisson.nms.api.entities.npc.Npc;
 import me.saiintbrisson.nms.api.entities.npc.PlayerInfoAction;
 import me.saiintbrisson.nms.api.entities.npc.SkinLayer;
-import me.saiintbrisson.nms.sdk.npc.controllers.ConnectionController;
-import me.saiintbrisson.nms.sdk.npc.controllers.PacketController;
+import me.saiintbrisson.nms.sdk.entities.npc.controllers.ConnectionController;
+import me.saiintbrisson.nms.sdk.entities.npc.controllers.PacketController;
 import me.saiintbrisson.nms.sdk.scoreboard.NmsTeam;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class NmsNpc extends EntityPlayer implements Npc {
+
+    private final int npcId;
 
     private final PacketController packetController;
     private final ConnectionController connectionController;
@@ -57,12 +59,21 @@ public class NmsNpc extends EntityPlayer implements Npc {
     private int targetRadius = 4;
 
     public NmsNpc(World world, String prefix, String name, String complement) {
+        this(
+          NpcRegistry.getInstance().nextId(),
+          world, prefix, name, complement
+        );
+    }
+
+    public NmsNpc(int id, World world, String prefix, String name, String complement) {
         super(
           MinecraftServer.getServer(),
           ((CraftWorld) world).getHandle(),
-          new GameProfile(UUID.nameUUIDFromBytes(("NPC=" + name).getBytes(StandardCharsets.UTF_8)), name),
+          new GameProfile(UUID.nameUUIDFromBytes(("NPC=" + id + "," + name).getBytes(StandardCharsets.UTF_8)), name),
           new PlayerInteractManager(((CraftWorld) world).getHandle())
         );
+
+        npcId = id;
 
         packetController = new PacketController(this);
         connectionController = new ConnectionController(this);
@@ -87,6 +98,21 @@ public class NmsNpc extends EntityPlayer implements Npc {
     }
 
     @Override
+    public int getEntityId() {
+        return getId();
+    }
+
+    @Override
+    public UUID getUniqueId() {
+        return getProfile().getId();
+    }
+
+    @Override
+    public String getName() {
+        return getProfile().getName();
+    }
+
+    @Override
     public Set<UUID> getVisibleTo() {
         return visibleMap.keySet();
     }
@@ -104,16 +130,6 @@ public class NmsNpc extends EntityPlayer implements Npc {
         }
 
         return mojangProfile;
-    }
-
-    @Override
-    public UUID getUniqueId() {
-        return getProfile().getId();
-    }
-
-    @Override
-    public String getName() {
-        return getProfile().getName();
     }
 
     @Override
@@ -277,6 +293,11 @@ public class NmsNpc extends EntityPlayer implements Npc {
 
     public void updateHeadRotation(Player player, float yaw, float pitch) {
         packetController.updateHeadRotation(player, yaw, pitch);
+    }
+
+    @Override
+    public void chat(String message) {
+        playerConnection.a(new PacketPlayInChat(message));
     }
 
     @Override

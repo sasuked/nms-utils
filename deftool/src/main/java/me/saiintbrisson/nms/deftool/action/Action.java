@@ -1,4 +1,4 @@
-package me.saiintbrisson.nms.test.action;
+package me.saiintbrisson.nms.deftool.action;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

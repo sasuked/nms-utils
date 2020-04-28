@@ -1,4 +1,4 @@
-package me.saiintbrisson.nms.sdk.npc;
+package me.saiintbrisson.nms.sdk.entities.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
