@@ -1,0 +1,6 @@
+name: DefTool
+version: 1.0.0
+main: me.saiintbrisson.nms.deftool.DefToolPlugin
+
+depend:
+  - NmsUtils

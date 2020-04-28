@@ -11,12 +11,14 @@ import java.util.UUID;
 public
 interface Npc extends NmsEntity {
 
-    Set<UUID> getVisibleTo();
-
-    MojangProfile getMojangProfile();
+    int getNpcId();
 
     String getName();
     UUID getUniqueId();
+
+    Set<UUID> getVisibleTo();
+
+    MojangProfile getMojangProfile();
 
     void setSkinLayers(SkinLayer... layers);
     default void setSkin(String value, String signature) {
@@ -65,5 +67,7 @@ interface Npc extends NmsEntity {
     void updateHeadRotation(Iterable<Player> players);
 
     void updateHeadRotation(Player player);
+
+    void chat(String message);
 
 }

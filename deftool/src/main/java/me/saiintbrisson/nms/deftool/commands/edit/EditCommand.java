@@ -1,10 +1,10 @@
-package me.saiintbrisson.nms.test.commands.edit;
+package me.saiintbrisson.nms.deftool.commands.edit;
 
 import lombok.AllArgsConstructor;
 import me.saiintbrisson.commands.Execution;
 import me.saiintbrisson.commands.annotations.Command;
-import me.saiintbrisson.nms.test.TestPlugin;
-import me.saiintbrisson.nms.test.action.Action;
+import me.saiintbrisson.nms.deftool.DefToolPlugin;
+import me.saiintbrisson.nms.deftool.action.Action;
 import me.saiintbrisson.nms.api.area.SimpleBlockPosition;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class EditCommand {
 
-    private TestPlugin plugin;
+    private DefToolPlugin plugin;
 
     @Command(
         name = "edit",
@@ -40,7 +40,7 @@ public class EditCommand {
     @Command(
         name = "edit.pos1"
     )
-    public void editPos1(Execution execution) {
+    public void editFirstPosition(Execution execution) {
         Player player = execution.getPlayer();
         UUID uniqueId = player.getUniqueId();
         Action action = plugin.getActions().get(uniqueId);
@@ -65,7 +65,7 @@ public class EditCommand {
     @Command(
         name = "edit.pos2"
     )
-    public void editPos2(Execution execution) {
+    public void editSecondPosition(Execution execution) {
         Player player = execution.getPlayer();
         UUID uniqueId = player.getUniqueId();
         Action action = plugin.getActions().get(uniqueId);

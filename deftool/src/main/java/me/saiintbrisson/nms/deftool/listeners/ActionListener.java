@@ -1,8 +1,9 @@
-package me.saiintbrisson.nms.test.action;
+package me.saiintbrisson.nms.deftool.listeners;
 
 import lombok.AllArgsConstructor;
-import me.saiintbrisson.nms.test.TestPlugin;
+import me.saiintbrisson.nms.deftool.DefToolPlugin;
 import me.saiintbrisson.nms.api.area.SimpleBlockPosition;
+import me.saiintbrisson.nms.deftool.action.Action;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ActionListener implements Listener {
 
-    private TestPlugin plugin;
+    private DefToolPlugin plugin;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(PlayerInteractEvent event) {
@@ -54,9 +55,13 @@ public class ActionListener implements Listener {
         );
 
         if(name.startsWith("LEFT")) {
+            if(position.equals(action.getLower())) return;
+
             action.setLower(position);
             player.sendMessage(String.format(" §a§l! §7Point §f#1 §7defined to §f%s§7.", position.formatPosition()));
         } else {
+            if(position.equals(action.getUpper())) return;
+
             action.setUpper(position);
             player.sendMessage(String.format(" §a§l! §7Point §f#2 §7defined to §f%s§7.", position.formatPosition()));
         }

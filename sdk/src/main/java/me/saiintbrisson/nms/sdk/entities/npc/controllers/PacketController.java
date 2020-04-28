@@ -1,7 +1,7 @@
-package me.saiintbrisson.nms.sdk.npc.controllers;
+package me.saiintbrisson.nms.sdk.entities.npc.controllers;
 
 import me.saiintbrisson.nms.api.entities.npc.PlayerInfoAction;
-import me.saiintbrisson.nms.sdk.npc.NmsNpc;
+import me.saiintbrisson.nms.sdk.entities.npc.NmsNpc;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;

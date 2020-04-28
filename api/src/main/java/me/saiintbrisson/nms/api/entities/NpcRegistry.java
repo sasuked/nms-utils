@@ -9,7 +9,6 @@ import me.saiintbrisson.nms.api.entities.npc.Npc;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -24,7 +23,7 @@ public class NpcRegistry {
         return INSTANCE;
     }
 
-    private Table<UUID, Integer, Npc> npcTable = HashBasedTable.create();
+    private Table<Integer, Integer, Npc> npcTable = HashBasedTable.create();
 
     private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> scheduledFuture;
@@ -48,34 +47,36 @@ public class NpcRegistry {
         }, 1000, 50, TimeUnit.MILLISECONDS);
     }
 
+    public int nextId() {
+        int current = 0;
+
+        for(Integer integer : npcTable.rowKeySet()) {
+            if(integer != null && integer > current) current = integer + 1;
+        }
+
+        return current;
+    }
+
     public void register(Npc npc) {
-        npcTable.put(npc.getUniqueId(), npc.getId(), npc);
+        npcTable.put(npc.getNpcId(), npc.getEntityId(), npc);
     }
 
     public Collection<Npc> getAll() {
         return npcTable.values();
     }
 
-    public Npc get(UUID id) {
+    public Npc getByNpcId(Integer id) {
         Iterator<Npc> iterator = npcTable.row(id).values().iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }
 
-    public Npc get(Integer id) {
+    public Npc getByEntityId(Integer id) {
         Iterator<Npc> iterator = npcTable.column(id).values().iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }
 
     public void unregister(Npc npc) {
-        npcTable.remove(npc.getUniqueId(), npc.getId());
-    }
-
-    public void unregister(UUID id) {
-        npcTable.row(id).clear();
-    }
-
-    public void unregister(Integer id) {
-        npcTable.column(id).clear();
+        npcTable.remove(npc.getNpcId(), npc.getEntityId());
     }
 
 }

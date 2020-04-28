@@ -38,5 +38,6 @@ public interface NmsHolder {
     Scoreboard createScoreboard(String name, String title);
 
     Npc createNpc(World world, String prefix, String name, String complement);
+    Npc createNpc(int id, World world, String prefix, String name, String complement);
 
 }
