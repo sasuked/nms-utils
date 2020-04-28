@@ -1,4 +1,4 @@
 rootProject.name = 'nms-utils'
 include 'api'
-//include 'sdk'
-
+include 'sdk'
+//include 'test'
