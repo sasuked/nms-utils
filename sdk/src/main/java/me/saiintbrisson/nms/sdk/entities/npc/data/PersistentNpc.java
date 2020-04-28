@@ -1,15 +1,10 @@
-package me.saiintbrisson.nms.sdk.npc.data;
+package me.saiintbrisson.nms.sdk.entities.npc.data;
 
 import lombok.Builder;
 import lombok.Data;
-import me.saiintbrisson.nms.api.NmsAPI;
 import me.saiintbrisson.nms.api.entities.MojangProfile;
-import me.saiintbrisson.nms.api.entities.NpcRegistry;
-import me.saiintbrisson.nms.sdk.npc.NmsNpc;
+import me.saiintbrisson.nms.api.entities.npc.Npc;
 import org.bukkit.Location;
-import org.bukkit.World;
-
-import static me.saiintbrisson.nms.api.NmsAPI.createNpc;
 
 @Data
 @Builder
@@ -24,9 +19,9 @@ public class PersistentNpc {
 	private boolean artificialIntelligence;
 	
 	
-	public static PersistentNpc of(NmsNpc npc) {
+	public static PersistentNpc of(Npc npc) {
 		return PersistentNpc.builder()
-			.id(npc.getId())
+			.id(npc.getNpcId())
 			.name(npc.getName())
 			.location(npc.getLocation())
 			.profile(npc.getMojangProfile())

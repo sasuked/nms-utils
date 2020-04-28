@@ -1,4 +1,4 @@
-package me.saiintbrisson.nms.sdk.npc.data;
+package me.saiintbrisson.nms.sdk.entities.npc.data;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -8,7 +8,6 @@ import me.saiintbrisson.nms.sdk.NmsPlugin;
 
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
