@@ -7,8 +7,6 @@ public class NetworkController extends NetworkManager {
 
     public NetworkController() {
         super(EnumProtocolDirection.CLIENTBOUND);
-
-
     }
 
 }

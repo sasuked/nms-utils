@@ -9,6 +9,7 @@ import me.saiintbrisson.nms.api.entities.npc.Npc;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -51,7 +52,7 @@ public class NpcRegistry {
         int current = 0;
 
         for(Integer integer : npcTable.rowKeySet()) {
-            if(integer != null && integer > current) current = integer + 1;
+            if(integer != null && integer >= current) current = integer + 1;
         }
 
         return current;
@@ -68,6 +69,14 @@ public class NpcRegistry {
     public Npc getByNpcId(Integer id) {
         Iterator<Npc> iterator = npcTable.row(id).values().iterator();
         return iterator.hasNext() ? iterator.next() : null;
+    }
+
+    public Npc getByUniqueId(UUID id) {
+        for(Npc value : npcTable.values()) {
+            if(value.getUniqueId().equals(id)) return value;
+        }
+
+        return null;
     }
 
     public Npc getByEntityId(Integer id) {

@@ -4,6 +4,8 @@ import lombok.Getter;
 import me.saiintbrisson.commands.CommandFrame;
 import me.saiintbrisson.nms.api.entities.npc.Npc;
 import me.saiintbrisson.nms.deftool.action.Action;
+import me.saiintbrisson.nms.deftool.commands.npc.CreationCommand;
+import me.saiintbrisson.nms.deftool.commands.npc.SkinCommand;
 import me.saiintbrisson.nms.deftool.listeners.ActionListener;
 import me.saiintbrisson.nms.api.NmsAPI;
 import me.saiintbrisson.nms.api.area.AreaHistory;
@@ -12,6 +14,7 @@ import me.saiintbrisson.nms.deftool.commands.npc.NpcCommand;
 import me.saiintbrisson.nms.deftool.commands.edit.EditCommand;
 import me.saiintbrisson.nms.deftool.commands.edit.SetCommand;
 import me.saiintbrisson.nms.deftool.commands.edit.UndoCommand;
+import me.saiintbrisson.nms.deftool.listeners.npc.SelectionListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -24,7 +27,7 @@ public class DefToolPlugin extends JavaPlugin {
     private AreaHistory history;
     private Map<UUID, Action> actions = new HashMap<>();
 
-    private Map<UUID, Npc> npcSelections = new HashMap<>();
+    private Map<UUID, Npc> npcSelectionMap = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -39,10 +42,13 @@ public class DefToolPlugin extends JavaPlugin {
         );
 
         frame.register(
-          new NpcCommand(this)
+          new NpcCommand(this),
+          new CreationCommand(this),
+          new SkinCommand(this)
         );
 
         getServer().getPluginManager().registerEvents(new ActionListener(this), this);
+        getServer().getPluginManager().registerEvents(new SelectionListener(this), this);
 
         history = NmsAPI.getAreaHistory();
     }

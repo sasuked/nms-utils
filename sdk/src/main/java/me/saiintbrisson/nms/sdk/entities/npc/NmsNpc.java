@@ -1,6 +1,6 @@
 package me.saiintbrisson.nms.sdk.entities.npc;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
@@ -14,6 +14,7 @@ import me.saiintbrisson.nms.api.entities.npc.SkinLayer;
 import me.saiintbrisson.nms.sdk.entities.npc.controllers.ConnectionController;
 import me.saiintbrisson.nms.sdk.entities.npc.controllers.PacketController;
 import me.saiintbrisson.nms.sdk.scoreboard.NmsTeam;
+import me.saiintbrisson.nms.sdk.util.StringSplitter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,12 +40,16 @@ public class NmsNpc extends EntityPlayer implements Npc {
     private final PacketController packetController;
     private final ConnectionController connectionController;
 
-    private final Map<UUID, Boolean> visibleMap;
+    private final Map<UUID, Integer> visibleMap;
 
-    private final PacketPlayOutScoreboardTeam teamPacket;
-    private final PacketPlayOutScoreboardTeam destroyTeamPacket;
+    private PacketPlayOutScoreboardTeam teamPacket;
+    private PacketPlayOutScoreboardTeam destroyTeamPacket;
 
     private final PacketPlayOutPlayerInfo removalPacket;
+
+    private NmsTeam nmsTeam;
+
+    private SkinLayer[] skinLayers = { SkinLayer.ALL };
 
     @Setter
     private boolean visibleToAll;
@@ -58,18 +63,28 @@ public class NmsNpc extends EntityPlayer implements Npc {
     @Setter
     private int targetRadius = 4;
 
-    public NmsNpc(World world, String prefix, String name, String complement) {
+    public NmsNpc(World world, String name) {
         this(
           NpcRegistry.getInstance().nextId(),
-          world, prefix, name, complement
+          world, name
         );
     }
 
-    public NmsNpc(int id, World world, String prefix, String name, String complement) {
+    public NmsNpc(int id, World world, String name) {
+        this(
+          id,
+          world, new StringSplitter(3, 16, name).getParts()
+        );
+    }
+
+    private NmsNpc(int id, World world, String[] name) {
         super(
           MinecraftServer.getServer(),
           ((CraftWorld) world).getHandle(),
-          new GameProfile(UUID.nameUUIDFromBytes(("NPC=" + id + "," + name).getBytes(StandardCharsets.UTF_8)), name),
+          new GameProfile(
+            UUID.nameUUIDFromBytes(("NPC=" + id + "," + name).getBytes(StandardCharsets.UTF_8)),
+            name[1] == null ? name[0] : name[1]
+          ),
           new PlayerInteractManager(((CraftWorld) world).getHandle())
         );
 
@@ -80,16 +95,18 @@ public class NmsNpc extends EntityPlayer implements Npc {
 
         visibleMap = new ConcurrentHashMap<>();
 
-        NmsTeam nmsTeam = new NmsTeam(
+        nmsTeam = new NmsTeam(
           null,
-          "zz" + (name.length() > 14 ? name.substring(0, 14) : name),
-          prefix,
-          name,
-          complement
+          "zz" + (getName().length() > 14 ? getName().substring(0, 14) : getName()),
+          name[0],
+          name[1],
+          name[2]
         );
 
-        teamPacket = new PacketPlayOutScoreboardTeam(nmsTeam, 0);
-        destroyTeamPacket = new PacketPlayOutScoreboardTeam(nmsTeam, 1);
+        if(name.length > 1) {
+            teamPacket = new PacketPlayOutScoreboardTeam(nmsTeam, 0);
+            destroyTeamPacket = new PacketPlayOutScoreboardTeam(nmsTeam, 1);
+        }
 
         removalPacket = new PacketPlayOutPlayerInfo(
           PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
@@ -110,6 +127,15 @@ public class NmsNpc extends EntityPlayer implements Npc {
     @Override
     public String getName() {
         return getProfile().getName();
+    }
+
+    @Override
+    public String getCompleteName() {
+        return nmsTeam.getPrefix() + nmsTeam.getMiddle() + nmsTeam.getSuffix();
+    }
+
+    public boolean hasTeam() {
+        return teamPacket != null && destroyTeamPacket != null;
     }
 
     @Override
@@ -153,6 +179,7 @@ public class NmsNpc extends EntityPlayer implements Npc {
 
     @Override
     public void setSkinLayers(SkinLayer... layers) {
+        skinLayers = layers;
         byte base = 0x00;
 
         for(SkinLayer layer : layers) {
@@ -164,6 +191,7 @@ public class NmsNpc extends EntityPlayer implements Npc {
 
     @Override
     public void setProperty(String name, String value, String signature) {
+        getProfile().getProperties().removeAll(name);
         getProfile().getProperties().put(name, new Property(name, value, signature));
     }
 
@@ -173,7 +201,20 @@ public class NmsNpc extends EntityPlayer implements Npc {
         AsyncCatcher.enabled = false;
         worldServer.b(Collections.singletonList(this));
 
+        server.getPlayerList().players.add(this);
+
         NpcRegistry.getInstance().register(this);
+    }
+
+    @Override
+    public void stopTracking() {
+        WorldServer worldServer = (WorldServer) this.world;
+        AsyncCatcher.enabled = false;
+
+        worldServer.kill(this);
+        server.getPlayerList().players.remove(this);
+
+        NpcRegistry.getInstance().unregister(this);
     }
 
     @Override
@@ -227,15 +268,31 @@ public class NmsNpc extends EntityPlayer implements Npc {
     }
 
     public void spawn(Iterable<Player> players) {
-        for(Player player : players) {
-            visibleMap.put(player.getUniqueId(), true);
+        if(!visibleToAll) {
+            for(Player player : players) {
+                visibleMap.put(player.getUniqueId(), 5);
+            }
         }
         packetController.spawn(players);
     }
 
     public void spawn(Player player) {
-        visibleMap.put(player.getUniqueId(), true);
+        if(!visibleToAll) {
+            visibleMap.put(player.getUniqueId(), 5);
+        }
         packetController.spawn(player);
+    }
+
+    @Override
+    public void setTabListTimeout(Player player, int timeout) {
+        visibleMap.put(player.getUniqueId(), timeout);
+    }
+
+    @Override
+    public void setTabListTimeout(Iterable<Player> players, int timeout) {
+        for(Player player : players) {
+            visibleMap.put(player.getUniqueId(), timeout);
+        }
     }
 
     @Override
@@ -258,15 +315,19 @@ public class NmsNpc extends EntityPlayer implements Npc {
     }
 
     public void destroy(Iterable<Player> players) {
-        for(Player player : players) {
-            visibleMap.remove(player.getUniqueId());
+        if(!visibleToAll) {
+            for(Player player : players) {
+                visibleMap.remove(player.getUniqueId());
+            }
         }
         packetController.destroy(players);
         packetController.dispatchPlayerInfo(players, PlayerInfoAction.REMOVE_PLAYER);
     }
 
     public void destroy(Player player) {
-        visibleMap.remove(player.getUniqueId());
+        if(!visibleToAll) {
+            visibleMap.remove(player.getUniqueId());
+        }
         packetController.destroy(player);
         packetController.dispatchPlayerInfo(player, PlayerInfoAction.REMOVE_PLAYER);
     }
@@ -304,7 +365,9 @@ public class NmsNpc extends EntityPlayer implements Npc {
     public void tick() {
         if(!artificialIntelligence) return;
 
-        for(Map.Entry<UUID, Boolean> entry : getVisibleMap().entrySet()) {
+        Set<Player> toUpdate = Sets.newConcurrentHashSet();
+
+        for(Map.Entry<UUID, Integer> entry : getVisibleMap().entrySet()) {
             UUID key = entry.getKey();
             Player player = Bukkit.getPlayer(key);
 
@@ -313,15 +376,16 @@ public class NmsNpc extends EntityPlayer implements Npc {
                 continue;
             }
 
-            if(entry.getValue()) {
-                visibleMap.put(player.getUniqueId(), false);
+            Integer value = entry.getValue();
+            if(value > 0) {
+                visibleMap.put(player.getUniqueId(), value - 1);
                 continue;
             }
 
+            visibleMap.put(player.getUniqueId(), 0);
             packetController.sendPackets(player, removalPacket);
         }
 
-        List<Player> toUpdate = Lists.newArrayList();
         boolean foundTarget = false;
 
         CraftWorld world = this.world.getWorld();

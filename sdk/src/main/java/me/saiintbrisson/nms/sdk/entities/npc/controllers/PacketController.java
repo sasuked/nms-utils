@@ -63,10 +63,12 @@ public class PacketController {
         );
 
         Packet packet = null;
-        if(action == PlayerInfoAction.ADD_PLAYER) {
-            packet = parent.getTeamPacket();
-        } else if(action == PlayerInfoAction.REMOVE_PLAYER) {
-            packet = parent.getDestroyTeamPacket();
+        if(parent.hasTeam()) {
+            if(action == PlayerInfoAction.ADD_PLAYER) {
+                packet = parent.getTeamPacket();
+            } else if(action == PlayerInfoAction.REMOVE_PLAYER) {
+                packet = parent.getDestroyTeamPacket();
+            }
         }
 
         return new Packet[] {infoPacket, packet};

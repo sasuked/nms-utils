@@ -14,4 +14,7 @@ public class ConnectionController extends PlayerConnection {
     @Override
     public void sendPacket(Packet packet) {}
 
+    @Override
+    public void disconnect(String s) {}
+
 }

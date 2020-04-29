@@ -75,12 +75,16 @@ public final class NmsAPI {
         return getHolder().createScoreboard(name, title);
     }
 
-    public static Npc createNpc(World world, String prefix, String name, String complement) {
-        return getHolder().createNpc(world, prefix, name, complement);
+    public static Npc createNpc(World world, String name) {
+        return getHolder().createNpc(world, name);
     }
 
-    public static Npc createNpc(int id, World world, String prefix, String name, String complement) {
-        return getHolder().createNpc(id, world, prefix, name, complement);
+    public static Npc createNpc(int id, World world, String name) {
+        return getHolder().createNpc(id, world, name);
+    }
+
+    public static void saveAllNpcs() {
+        getHolder().saveAllNpcs();
     }
 
 }

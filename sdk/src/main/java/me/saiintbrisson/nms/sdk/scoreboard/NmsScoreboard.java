@@ -72,15 +72,6 @@ public class NmsScoreboard extends Scoreboard implements me.saiintbrisson.nms.ap
 	}
 	
 	@Override
-	public void setLines(String... lines) {
-		int index = 15;
-		
-		for (String line : lines) {
-			setLine(index--, line);
-		}
-	}
-	
-	@Override
 	public void show(Player player) {
 		CraftPlayer craftPlayer = (CraftPlayer) player;
 		AsyncCatcher.enabled = false;
@@ -145,7 +136,7 @@ public class NmsScoreboard extends Scoreboard implements me.saiintbrisson.nms.ap
 		
 		for (int i = 0; i < lines.length; i++) {
 			ScoreboardLine line = lines[i];
-			if (line == null) continue;
+			if (line == null || !line.isUpdatable()) continue;
 			
 			String text = line.getText(player);
 			if (text == null) continue;
@@ -172,7 +163,7 @@ public class NmsScoreboard extends Scoreboard implements me.saiintbrisson.nms.ap
 		}
 		
 		ScoreboardLine line = lines[slot];
-		if (line == null) return;
+		if (line == null || !line.isUpdatable()) return;
 		
 		String text = line.getText(player);
 		if (text == null) return;

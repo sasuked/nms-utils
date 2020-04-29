@@ -16,9 +16,9 @@ public class NmsTeam extends ScoreboardTeam {
     public NmsTeam(Scoreboard scoreboard, String name, String prefix, String playerName, String complement) {
         super(scoreboard, name);
 
-        start = prefix;
-        middle = playerName;
-        end = complement;
+        start = prefix == null ? "" : prefix;
+        middle = playerName == null ? "" : playerName;
+        end = complement == null ? "" : complement;
     }
 
     public NmsTeam(Scoreboard scoreboard, String name, String text) {

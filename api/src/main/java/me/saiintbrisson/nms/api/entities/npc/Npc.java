@@ -13,13 +13,15 @@ interface Npc extends NmsEntity {
 
     int getNpcId();
 
-    String getName();
     UUID getUniqueId();
+    String getName();
+    String getCompleteName();
 
     Set<UUID> getVisibleTo();
 
     MojangProfile getMojangProfile();
 
+    SkinLayer[] getSkinLayers();
     void setSkinLayers(SkinLayer... layers);
     default void setSkin(String value, String signature) {
         setProperty("textures", value, signature);
@@ -44,6 +46,8 @@ interface Npc extends NmsEntity {
 
     void trackEntity();
 
+    void stopTracking();
+
     void lookAtEntity(LivingEntity entity);
 
     void dispatchPlayerInfo(Iterable<Player> players, PlayerInfoAction action);
@@ -51,21 +55,20 @@ interface Npc extends NmsEntity {
     void dispatchPlayerInfo(Player player, PlayerInfoAction action);
 
     void spawn(Iterable<Player> players);
-
     void spawn(Player player);
+
+    void setTabListTimeout(Player player, int timeout);
+    void setTabListTimeout(Iterable<Player> players, int timeout);
 
     void respawn();
 
     void destroy(Iterable<Player> players);
-
     void destroy(Player player);
 
     void updateMetadata(Iterable<Player> players);
-
     void updateMetadata(Player player);
 
     void updateHeadRotation(Iterable<Player> players);
-
     void updateHeadRotation(Player player);
 
     void chat(String message);

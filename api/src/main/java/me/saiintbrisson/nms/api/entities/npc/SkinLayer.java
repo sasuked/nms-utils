@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum SkinLayer {
 
+    NONE(0x00),
+
     CAPE(0x01),
 
     JACKET(0x02),
