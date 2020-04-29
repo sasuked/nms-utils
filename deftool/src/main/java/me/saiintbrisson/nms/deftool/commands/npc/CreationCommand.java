@@ -34,7 +34,8 @@ public class CreationCommand {
             return;
         }
 
-        Location location = execution.getPlayer().getLocation();
+        Player player = execution.getPlayer();
+        Location location = player.getLocation();
         Npc npc = NmsAPI.createNpc(location.getWorld(), name);
 
         npc.setLocation(location);
@@ -55,6 +56,7 @@ public class CreationCommand {
         npc.spawn(onlinePlayers);
 
         NmsAPI.saveAllNpcs();
+        plugin.getNpcSelectionMap().put(player.getUniqueId(), npc);
         execution.sendMessage(" §a§l! §7Successfully created NPC.");
     }
 

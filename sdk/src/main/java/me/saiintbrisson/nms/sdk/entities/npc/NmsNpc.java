@@ -112,6 +112,8 @@ public class NmsNpc extends EntityPlayer implements Npc {
           PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER,
           this
         );
+
+        setSkinLayers(SkinLayer.ALL);
     }
 
     @Override
